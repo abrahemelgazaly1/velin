@@ -1,0 +1,10 @@
+import {useState} from 'react';
+import {Link} from '@tanstack/react-router';
+import {useSuspenseQuery} from '@tanstack/react-query';
+import {ChevronRight} from 'lucide-react';
+import {Button} from '@/components/ui/button';
+import {ProductControls} from './product-controls';
+import {ProductCard} from './product-card';
+import {catalogOptions} from '@/lib/catalog.functions';
+import {productImage,money} from '@/lib/store';
+export function ProductPage({id}:{id:string}){const{data}=useSuspenseQuery(catalogOptions()),[index,setIndex]=useState(0);const p=data.products.find(x=>x._id===id);if(!p)return <main className="page empty-state"><h1>Product not found</h1><Button asChild><Link to="/products">Explore products</Link></Button></main>;return <main className="page"><nav className="breadcrumbs"><Link to="/">Home</Link><ChevronRight/><Link to="/products">Products</Link><ChevronRight/><span>{p.name}</span></nav><div className="detail-grid"><div><img className="detail-main-image" src={productImage(p.images[index])} alt={p.name} width={1024} height={1024}/><div className="thumbnails">{p.images.map((src,i)=><Button key={i} variant="outline" className={`thumbnail ${index===i?'active':''}`} aria-label={`Product image ${i+1}`} onClick={()=>setIndex(i)}><img src={productImage(src)} alt={`${p.name} view ${i+1}`} width={75} height={75}/></Button>)}</div></div><div className="detail-info"><span className="section-kicker">VÉLIN / CROW-NECK</span><h1>{p.name}</h1><p className="detail-price">{money(p.price)}</p><details className="details-disclosure"><summary>DESCRIPTION</summary><p>{p.description}</p></details><ProductControls key={p._id} product={p}/><details className="details-disclosure"><summary>SHIPPING & DELIVERY</summary><p>{data.settings?.delivery} Flat delivery: {money(110)}.</p></details></div></div><section className="mt-16"><div className="section-heading"><h2>Other products</h2><Link className="underlined-link" to="/products">VIEW ALL</Link></div><div className="product-slider">{data.products.filter(x=>x._id!==p._id).slice(0,4).map(x=><ProductCard product={x} key={x._id}/>)}</div></section></main>;}
