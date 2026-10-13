@@ -66,7 +66,9 @@ const mockSettings: Settings = {
 };
 
 export const getCatalog = createServerFn({method:'GET'}).handler(async()=>{
- const apiUrl=process.env['API_URL']||'http://localhost:3000/api';
+ // On Vercel, API_URL is provided via service binding to the internal server URL
+ // In development, falls back to localhost
+ const apiUrl = process.env['API_URL'] || 'http://localhost:3000/api';
  
  try{
    const [productsRes,settingsRes]=await Promise.all([
